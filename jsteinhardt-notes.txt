@@ -1,0 +1,32 @@
+The first zip file (resilience.zip) is based on the robust SVD algorithm
+outlined in our arxiv paper "Resilience: A Criterion for Learning in the
+Presence of Arbitrary Outliers". It is simpler but restricted to mean
+estimation.
+
+The second file (quadratic.m) is the algorithm from our untrusted data
+paper. I've currently just included the main SDP (not the outlier removal).
+
+I wouldn't be surprised if something ends up not running the first time (due
+to some local configurations I have set) so let me know if you run into
+issues. You'll need yalmip and sedumi installed for some of this.
+
+---- resilience.zip ---
+
+find_outliers.m is what's doing the work. It takes as input matrices U, D,
+and V comprising the singular value decomposition of the input data, and a
+scalar r, and outputs a vector tau. The vector tau assigns a score to each
+point saying "how much" that point looks like an outlier. The scalar r
+should be roughly equal to the rank k of the principal subspace that you are
+trying to recover. (I set it to 5 in my code.)
+
+--- quadratic.m ---
+
+This just implements the SDP from the untrusted data paper for quadratic
+loss functions (with random data). Once you understand how it works (mainly
+getting used to yalmip) it should be straightforward to modify for other
+loss functions like linear regression. I recommend plotting e.g. the top two
+principle components of the ws to analyze the output.
+
+-Jacob
+
+
