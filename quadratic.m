@@ -29,10 +29,10 @@ function [ws_v, Y_v] =  quadratic(f,T)
         ws_v = double(ws); % extracts the optimal values of ws after solving optimization
         Y_v = double(Y);
 
-        if trace(Y_v) <= ((6*r^2)/alpha)
-            return;
-        else 
-            c = updateWeights(c, ws_v, Y_v);    
+ %       if trace(Y_v) <= ((6*r^2)/alpha)
+ %           return;
+ %       else 
+ %           c = updateWeights(c, ws_v, Y_v);    
         end 
     end 
 end 
