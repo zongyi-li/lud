@@ -1,20 +1,21 @@
-m = 100; % number of terms
-d = 10; % dim of y
+% dataset = zeros(100, 11);
+% dataset(:,1:10) = 2*rand(100,10)-1;
+% w = ones(10,1);
+% noise = normrnd(0,0.2,10,1);
+% dataset(1:10,end) = dataset(1:10,1:10) * w + noise;
+% dataset(11:end,end) = 2*rand(90,1)-1;
+% 
+% T = ones(100,1);
+% 
 
-% y part of data
-datay = 2*rand(m, d) - 1; % y is uniformly dist
-% w for the optimal linear fit
-w = ones(d,1);
-
-noise = normrnd(0,0.2,d,1);
-
-% z part of data
-dataz = zeros(m,1);
-% first 1:10 terms are Igood, z = Y * w + noise
-dataz(1:10,1) = datay(1:10,1:d) * w + noise;
-% the rest of terms are random
-dataz(11:end,1) = 2*rand(90,1) - 1;
-
-% T is the number of points (weights) for each term.
-T = ones(100,1);
+r1 = normrnd(0,5,50,1);
+r2 = normrnd(100,5,50,1);
+r3 = normrnd(200,5,50,1);
+w = [r1;r2;r3];
+n = 150;
+delta = 0.1;
+I = 1/4;
+tau = 2*5;
+rho = 1+1/delta*log(n/I);
+[P,k] = padded(w, rho, tau);
 
