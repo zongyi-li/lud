@@ -14,7 +14,8 @@
 % w_star = repmat(w_star,m,1);
 % D = sqrt(sum((w_star - W).^2,2));
 
-testcase = 5;
+testcase = 7;
+
 if (testcase == 1)
     % test case 1: 1-d
     r1 = normrnd(0,5,50,1);
@@ -103,5 +104,69 @@ elseif (testcase == 5)
         plot(P{i}(:,1),P{i}(:,2),'+','Color',unifrnd(0,1,1,3))
         fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
     end
+    
+elseif (testcase == 6) 
+    % plot clusters with num points >= 10
+    % testing circle drawing function
+    d = 10;
+    %r1 = unifrnd(0,200,100,d);
+    %r3 = mvnrnd(100*ones(1,d),5*eye(d),50);
+    %w = [r1;r3];
+    r1 = mvnrnd(zeros(1,d),5*eye(d),50);
+    r2 = mvnrnd(100*ones(1,d),5*eye(d),50);
+    r3 = mvnrnd(200*ones(1,d),5*eye(d),50);
+    w = [r1;r2;r3];
+    n = 150;
+    delta = 0.1;
+    I = 1/4;
+    tau = 2.5;
+    rho = 1+1/delta*log(n/I);
+    [P,k, Cr] = padded(w, rho, tau);
+    % size of each cell
+    figure
+    for i = 1:size(P,2)
+        hold on;
+        color = unifrnd(0,1,1,3);
+        plot(P{i}(:,1),P{i}(:,2),'+','Color',color)
+        fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
+        
+        % plot the cluster if there are at least 10 points in the cluster
+        if size(P{i},1) >= 10
+            w_star = Cr{i}(1:end-1);
+            radius = Cr{i}(end);
+            viscircles([w_star(1),w_star(2)],radius,'LineStyle','--','LineWidth', 0.5,'Color',color);
+        end
+    end
+    
+    elseif (testcase == 7)
+    d = 10;
+    r1 = unifrnd(0,200,100,d);
+    r3 = mvnrnd(100*ones(1,d),5*eye(d),50);
+    w = [r1;r3];
+    n = 150;
+    delta = 0.1;
+    I = 1/4;
+    tau = 5;
+    rho = 1+1/delta*log(n/I);
+    [P,k, Cr] = padded(w, rho, tau);
+    % size of each cell
+    figure
+    for i = 1:size(P,2)
+        hold on;
+        color = unifrnd(0,1,1,3);
+        plot(P{i}(:,1),P{i}(:,2),'+','Color',color)
+        fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
+        
+        % plot the cluster if there are at least 10 points in the cluster
+        if size(P{i},1) >= 10
+            w_star = Cr{i}(1:end-1);
+            radius = Cr{i}(end);
+            viscircles([w_star(1),w_star(2)],radius,'LineStyle','--','LineWidth', 0.5,'Color',color);
+        end
+    end
+    
+
 end
+
+%viscircles([100,100],10,'LineWidth', 0.5,'Color','blue')
 
