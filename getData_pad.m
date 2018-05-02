@@ -46,7 +46,7 @@ elseif (testcase == 2)
     [P,k] = padded(w, rho, tau);
     % size of each cell
     for i = 1:size(P,2)
-        fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
+        fprintf('size of cell %i: %i*%i\n', i, size(P{i}.value,1),size(P{i}.value,2));
     end
     
 elseif (testcase == 3)
@@ -63,8 +63,8 @@ elseif (testcase == 3)
     figure
     for i = 1:size(P,2)
         hold on;
-        plot(P{i}(:,1),P{i}(:,2),'+','Color',unifrnd(0,1,1,3))
-        fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
+        plot(P{i}.value(:,1),P{i}.value(:,2),'+','Color',unifrnd(0,1,1,3))
+        fprintf('size of cell %i: %i*%i\n', i, size(P{i}.value,1),size(P{i}.value,2));
     end
 elseif (testcase == 4)
     % test case 2: 10-d
@@ -83,8 +83,8 @@ elseif (testcase == 4)
     figure
     for i = 1:size(P,2)
         hold on;
-        plot(P{i}(:,1),P{i}(:,2),'+','Color',unifrnd(0,1,1,3))
-        fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
+        plot(P{i}.value(:,1),P{i}.value(:,2),'+','Color',unifrnd(0,1,1,3))
+        fprintf('size of cell %i: %i*%i\n', i, size(P{i}.value,1),size(P{i}.value,2));
     end
 elseif (testcase == 5)
     d = 10;
@@ -101,8 +101,8 @@ elseif (testcase == 5)
     figure
     for i = 1:size(P,2)
         hold on;
-        plot(P{i}(:,1),P{i}(:,2),'+','Color',unifrnd(0,1,1,3))
-        fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
+        plot(P{i}.value(:,1),P{i}.value(:,2),'+','Color',unifrnd(0,1,1,3))
+        fprintf('size of cell %i: %i*%i\n', i, size(P{i}.value,1),size(P{i}.value,2));
     end
     
 elseif (testcase == 6) 
@@ -127,11 +127,11 @@ elseif (testcase == 6)
     for i = 1:size(P,2)
         hold on;
         color = unifrnd(0,1,1,3);
-        plot(P{i}(:,1),P{i}(:,2),'+','Color',color)
-        fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
+        plot(P{i}.value(:,1),P{i}.value(:,2),'+','Color',color)
+        fprintf('size of cell %i: %i*%i\n', i, size(P{i}.value,1),size(P{i}.value,2));
         
         % plot the cluster if there are at least 10 points in the cluster
-        if size(P{i},1) >= 10
+        if size(P{i}.value,1) >= 10
             w_star = Cr{i}(1:end-1);
             radius = Cr{i}(end);
             viscircles([w_star(1),w_star(2)],radius,'LineStyle','--','LineWidth', 0.5,'Color',color);
@@ -154,11 +154,11 @@ elseif (testcase == 6)
     for i = 1:size(P,2)
         hold on;
         color = unifrnd(0,1,1,3);
-        plot(P{i}(:,1),P{i}(:,2),'+','Color',color)
-        fprintf('size of cell %i: %i*%i\n', i, size(P{i},1),size(P{i},2));
+        plot(P{i}.value(:,1),P{i}.value(:,2),'+','Color',color)
+        fprintf('size of cell %i: %i*%i\n', i, size(P{i}.value,1),size(P{i}.value,2));
         
         % plot the cluster if there are at least 10 points in the cluster
-        if size(P{i},1) >= 10
+        if size(P{i}.value,1) >= 10
             w_star = Cr{i}(1:end-1);
             radius = Cr{i}(end);
             viscircles([w_star(1),w_star(2)],radius,'LineStyle','--','LineWidth', 0.5,'Color',color);
