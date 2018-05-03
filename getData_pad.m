@@ -14,7 +14,7 @@
 % w_star = repmat(w_star,m,1);
 % D = sqrt(sum((w_star - W).^2,2));
 
-testcase = 7;
+testcase = 10;
 
 if (testcase == 1)
     % test case 1: 1-d
@@ -164,7 +164,67 @@ elseif (testcase == 6)
             viscircles([w_star(1),w_star(2)],radius,'LineStyle','--','LineWidth', 0.5,'Color',color);
         end
     end
+% testcase 8 - ? for greedycluster
+elseif (testcase == 8)
+    % test case 8: 1-d
+    r1 = normrnd(0,5,50,1);
+    r2 = normrnd(100,5,50,1);
+    r3 = normrnd(200,5,50,1);
+    W = [r1;r2;r3];
     
+    rfinal = 10;
+    epsilon = 0;
+    muN = 45;
+    T = ones(150,1);
+    [U] = greedycluster(W, rfinal, epsilon, muN, T);  
+    plot(W,ones(150,1),'.')
+    hold on;
+    plot(U,ones(size(U,1),1),'+', 'Color', 'r')
+    for i = 1:size(U,1)
+        viscircles([U(i),1],4*rfinal,'LineStyle','--','LineWidth', 0.5,'Color','r');
+    end
+    
+elseif (testcase == 9)
+    % test case 9: 2-d
+    r1 = mvnrnd([0,0],5*eye(2),50);
+    r2 = mvnrnd([100,100],5*eye(2),50);
+    r3 = mvnrnd([200,200],5*eye(2),50);
+    W = [r1;r2;r3];
+    
+    rfinal = 10;
+    epsilon = 0;
+    muN = 45;
+    T = ones(150,1);
+    [U] = greedycluster(W, rfinal, epsilon, muN, T); 
+    figure;
+    plot(W(:,1),W(:,2),'.')
+    hold on;
+    for i = 1:size(U,1)
+        color = unifrnd(0,1,1,3);
+        plot(U(:,1),U(:,2),'+', 'Color', color)
+        viscircles([U(i,1),U(i,2)],4*rfinal,'LineStyle','--','LineWidth', 0.5,'Color',color);
+    end
+    
+elseif (testcase == 10)
+    % test case 10: 10d uniform
+    d = 2;
+    r1 = unifrnd(0,200,100,d);
+    r3 = mvnrnd(100*ones(1,d),5*eye(d),50);
+    W = [r1;r3];
+    
+    rfinal = 5;
+    epsilon = 0;
+    muN = 3;
+    T = ones(150,1);
+    [U] = greedycluster(W, rfinal, epsilon, muN, T); 
+    figure;
+    plot(W(:,1),W(:,2),'.')
+    hold on;
+    for i = 1:size(U,1)
+        color = unifrnd(0,1,1,3);
+        plot(U(:,1),U(:,2),'+', 'Color', color)
+        viscircles([U(i,1),U(i,2)],2*rfinal,'LineStyle','--','LineWidth', 0.5,'Color',color);
+    end
 
 end
 

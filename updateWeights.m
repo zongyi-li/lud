@@ -1,48 +1,39 @@
-function[c_p] = updateWeights(c, wh, datay,dataz,T,Yh)
-    % ??? Yh ???
+function[c_p] = updateWeights(c, wh, A, T, mu)
+%Input:
+% c: 1*m, weights for each term
+% wh: w_hat m*d matrix from quadratic.m
+% A: (d+1)*(d+1)*m, loss matrix.
+% T: m*1, number of points in each terms.
+% mu: fraction of good points
+%Output:
+% c_p: cprime, new weights for each term
+
+[m,d] = size(wh);
+N = sum(T);
+
+z = zeros(1,m);
+
+for i = 1:m
     %define variables for optimization
-    [m,d] = size(wh);
-    N = sum(T);
+    ai = sdpvar(1, m, 'full');
+    wt = sdpvar(1, d,'full');
 
-    %need to define the size of a
-    mu = 0.1;
-    z = zeros(1,m);
-    c_p = zeros(1,m);
+    % objective
+    Obj = [1,wt]*A(:,:,i)*[1,wt]';
 
+    %define our constraint;        
+    Cons = [wt == ai*wh;
+            sum(ai) == 1; 
+            0 <= ai <= 2/(mu*N)*T'];
 
-    for i = 1:m
-        ai = sdpvar(1, m, 'full');
-        wt = sdpvar(1, d,'full');
-        
-        % objective
-        Obj = (dataz(i)-wt*datay(i,:)').^2; %f_i(wt)
-        
-        %define our constraint;
-        %wt = sum(subs(a(i,j)*w(j), j, 1:m));
-        
-        Cons = [wt == ai*wh;
-                sum(ai) == 1; %sum(subs(a(i,k),k,1:m)) == 1;
-                0 <= ai <= 2/(mu*N)*T(i)]; %2/(alpha*d) >= a(i,:) >= 0
-        
-        diagnostics = optimize(Cons, Obj);
-        %ai_v = double(ai);
-        wt_v = double(wt);
-        z(i) = (dataz(i)-wt_v*datay(i,:)').^2 - (dataz(i)-wh(i,:)*datay(i,:)').^2;
+    diagnostics = optimize(Cons, Obj);
 
-    end
+    wt_v = double(wt);
+    z(i) = [1,wt-wh(i,:)]*A(:,:,i)*[1,wt-wh(i,:)]';
 
-    %diagnostics = optimize(Cons, Obj);
-    %once we get \tilde(w) from the solution of the optimization, we can get
-    %z_i
-    %wt_v = double(wt);
-    %for p = 1:m
-    %    z(p) = f_i(wt_v(p)) - f_i(wh(p));
-    %end
-    % z_max = max(z));
+end
 
-    z_max = max(z(c.*T'~=0));
-    c_p = c .* ((z_max - z)/z_max);
-    %for i = 1:m
-    %    c_p(i) = c(i)*( (z_max - z(i))/z_max );
-    %end
+z_max = max(z(c~=0));
+c_p = c .* ((z_max - z)/z_max);
+
 end

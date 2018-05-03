@@ -1,4 +1,4 @@
-function [U, W] =  listreg(T, lossMat, mu, r0, rfinal)
+function [U, W] =  listreg(T, lossMat, mu, r0, rfinal, epsilon)
 % T: number of examples in each term
 % lossMat: (d+1)*(d+1)*m loss matrix, example info to compute the l2 loss
 % ws: m*d
@@ -7,21 +7,21 @@ m = size(T,1);
 d = size(lossMat,1) - 1;
 N = sum(T);
 r = r0;
-
-[ws_v, ~, ~] =  quadratic(lossMat, T , zeros(1,d) ); % first run, zero shift
+S = 1;
+[ws_v, ~, ~] =  quadratic(lossMat, T, zeros(1,d), r, mu, S); % first run, zero shift
 
 t_maxiter = 10;
 for t=1:t_maxiter
     W = ws_v;
     if r < 1/2*rfinal  % terminating case
-        U = r; % U = greedycluster(W,rfinal);
+        U = greedycluster(W,rfinal, epsilon, mu*N, T);
         break;
     end
 
     padded_maxiter = 10;  % 112*log(t*(t+1)/delta);
     Wh = NaN(m,d,padded_maxiter);
-    delta_p = 7/8;
-    rho = r*log(2/mu)/delta_p;
+
+    rho = r*log(2/mu);
     tau = 2*r;
 
     for h=1:padded_maxiter
@@ -31,7 +31,7 @@ for t=1:t_maxiter
             if size_T > mu * N              % Run algo1 
                 shift = Cr{i}(1:end-1);
                 clusterlossMat = lossMat(:,:,P{i}.index); 
-                [ws_cluster, ~, ~] =  quadratic(clusterlossMat, T(P{i}.index), shift);
+                [ws_cluster, ~, ~] =  quadratic(clusterlossMat, T(P{i}.index), shift, rho+r, mu, S);
                 Wh(P{i}.index,:,h) = ws_cluster;
             end
         end
@@ -39,7 +39,8 @@ for t=1:t_maxiter
     for i=1:m
         for h0 = 1:padded_maxiter
             % dimension: may need to transpose
-            D = sqrt(sum((Wh(i,:,:) - repmat(Wh(i,:,h0), 1,1,padded_maxiter)).^2, 2));
+            % D should be of size padded_maxiter (1*1*h)
+            D = sqrt(sum((Wh(i,:,:) - repmat(Wh(i,:,h0), 1,1,padded_maxiter)).^2, 2));      
             if sum(D <= 1/3*r) > 1/2 * padded_maxiter
                 ws_v(i,:) = Wh(i,:,h0);
                 break;

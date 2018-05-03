@@ -1,4 +1,4 @@
-function [U] = greedycluster(w, r, muN, T)
+function [U] = greedycluster(W, rfinal, epsilon, muN, T)
 
 %Input
 % W: m*d, w for each terms.
@@ -7,35 +7,34 @@ function [U] = greedycluster(w, r, muN, T)
 % U is a list of w, as the center of ball.
 
 % We iterate through all w in W, check if there exist enough point within distance 
-m = size(w,1); % number of (remaining) rows of W
-radius = 2*r;
+m = size(W,1); % number of (remaining) rows of W
 
-U = w;
+U = [];
 
 list = randperm(m);
-iter = 1;
-remaindingIndex = 1:m;
+uidx = 1;
 
-    while (m ~= 0)
-        j = list(iter);
-        w_star = repmat(w(j,:),m,1);
-        D = sqrt(sum((w_star - U).^2,2));
-        B = U(D <= radius,:);
-        size = sum(T(D <= radius));
+for iter=1:m
+	j = list(iter);
+	w_star = repmat(W(j,:),m,1);
+	D = sqrt(sum((w_star - W).^2,2));
+	num_intersect = sum(T(D <= 2*rfinal));
         
-        U = U(D > radius,:);
-        T = T(D > radius);
-       
-        if (size(B,1) ~= 0 && size >= muN) 
-            P{cluster}.value = B;
-            P{cluster}.index = remaindingIndex(D <= radius);
-            remaindingIndex = remaindingIndex(D > radius);
-            wr = [w(j,:),radius]; % comment out this line if don't need cluster center&radius
-            Cr{cluster} = wr; % comment out this line if don't need cluster center&radius
-            cluster = cluster + 1;
+    if (num_intersect >= (1-epsilon)*muN) 
+        if uidx == 1
+            % the first w in the list, if satisfy the above condition, will
+            % be added to U
+            U(uidx,:) = W(j,:);
+            uidx = uidx + 1;
+        else
+            % check if W(j,:) has distance at least 4rfinal to all u in U
+            DU = sqrt(sum((w_star(1:uidx-1,:) - U).^2,2));
+            if sum(DU <= 4*rfinal) == 0
+                % satisfy both conditions, add W(j,:) to U
+                U(uidx,:) = W(j,:);
+                uidx = uidx + 1;
+            end
         end
-        iter = iter + 1;
-        m = size(U,1);   
-    end
-    
+    end     
+end    
 end
