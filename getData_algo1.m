@@ -1,16 +1,16 @@
 addpath(genpath('YALMIP-master'))
 addpath(genpath('mosek'))
-m = 10; % number of terms
-i_m = 3;
-d = 2; % dim of y
+m = 100; % number of terms
+i_m = 10;
+d = 4; % dim of y
 scale = 100;
 
 lossMat = zeros(d+1,d+1,m);
 T = binornd(200,0.5,[1,m]);
-wstar = ones(1,d);
+wstar = 5 * ones(1,d);
 for i = 1 : i_m
-    Y = (2 * rand(T(i), d) - 1) * scale ; % t*d
-    %noise = normrnd(0, 0.2 ,T(i),1) * scale ; % t*1
+    Y = (2 * rand(T(i), d) - 1) * scale; % t*d
+    noise = normrnd(0, 0.2 ,T(i),1) * scale ; % t*1
     Z = Y * wstar' + noise;   % t*1
     lossMat(:,:,i) = [Z'*Z ,-1*Z'*Y ;-1*Y'*Z, Y'*Y];
     disp(wstar);
@@ -34,8 +34,8 @@ S = 1;
 %[wh_v, Y_v, c] =  quadratic(lossMat, T, u, r, mu, S);
 
 r0 = d;
-rfinal = 0.1;
-epsilon = 0;
+rfinal = 0.2;
+epsilon = 0.1;
 [U, W] =  listreg(lossMat, T, mu, r0, rfinal, S, epsilon);
 
 figure;
