@@ -19,7 +19,7 @@ N = sum(T);
 
 %for now we define lambda as a constant
 lambda = sqrt(8*mu)*N*m*S/r; 
-disp(lambda);
+% disp(lambda);
 
 %initialize weights c <- [1,...,1] \in \R^n
 c = ones(1,m); 
@@ -46,8 +46,8 @@ for t = 1:maxiter
     wh_v = double(wh); % extracts the optimal values of ws after solving optimization
     Y_v = double(Y);
 
-    disp(t); disp(wh_v); disp(trace(Y_v));
-    if trace(Y_v) <= 10 %((6*r^2)/mu)
+    % disp(t); disp(wh_v); disp(trace(Y_v)); disp((6*r^2)/mu);
+    if trace(Y_v) <= ((6*r^2)/mu)
         break;
     else
         c = updateWeights(c, wh_v, A, T, mu);    

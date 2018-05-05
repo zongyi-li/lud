@@ -1,4 +1,4 @@
-function [U, W] =  listreg(T, lossMat, mu, r0, rfinal, epsilon)
+function [U, W] =  listreg(lossMat, T, mu, r0, rfinal, S, epsilon)
 % T: number of examples in each term
 % lossMat: (d+1)*(d+1)*m loss matrix, example info to compute the l2 loss
 % ws: m*d
@@ -7,14 +7,15 @@ m = size(T,1);
 d = size(lossMat,1) - 1;
 N = sum(T);
 r = r0;
-S = 1;
 [ws_v, ~, ~] =  quadratic(lossMat, T, zeros(1,d), r, mu, S); % first run, zero shift
 
 t_maxiter = 10;
 for t=1:t_maxiter
     W = ws_v;
-    if r < 1/2*rfinal  % terminating case
+    disp(t);disp(r);disp(W);
+    if r <= 1/2*rfinal  % terminating case
         U = greedycluster(W,rfinal, epsilon, mu*N, T);
+        disp(U);
         break;
     end
 

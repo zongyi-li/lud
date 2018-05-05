@@ -19,7 +19,8 @@ end
 for i = i_m+1 : m
     wstar = randi(10,[1,d]);
     Y = (2*rand(T(i), d) - 1) * scale ; % t*d
-    Z = Y * wstar'; %(2*rand(T(i), 1) - 1) * scale ; % t*1
+    Z = (2*rand(T(i), 1) - 1) * scale ; % t*1
+    %Z = Y * wstar'; 
     lossMat(:,:,i) = [Z'*Z ,-1*Z'*Y ;-1*Y'*Z, Y'*Y];
     disp(wstar);
 end
@@ -30,10 +31,12 @@ u = zeros(1,d);
 r = d;
 mu = sum(T(1:i_m))/sum(T);
 S = 1;
-[wh_v, Y_v, c] =  quadratic(lossMat, T, u, r, mu, S);
+%[wh_v, Y_v, c] =  quadratic(lossMat, T, u, r, mu, S);
 
-
-%[U, W] =  listreg(T, lossMat, mu, r0, rfinal, 0);
+r0 = d;
+rfinal = 0.1;
+epsilon = 0;
+[U, W] =  listreg(lossMat, T, mu, r0, rfinal, S, epsilon);
 
 
 

@@ -33,15 +33,15 @@ for i = 1:m
     wt_v = double(wt);
     
     %disp(i);
-    disp(wt_v);
+    %disp(wt_v);
     
     z(i) = abs([1,wt-wh(i,:)]*A(:,:,i)*[1,wt-wh(i,:)]');
 
 end
-disp(z);
+%disp(z);
 
 z_max = max(z(c~=0));
 c_p = c .* ((z_max - z)/z_max);
-disp(c_p);
+%disp(c_p);
 
 end

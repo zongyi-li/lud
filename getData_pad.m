@@ -14,7 +14,7 @@
 % w_star = repmat(w_star,m,1);
 % D = sqrt(sum((w_star - W).^2,2));
 
-testcase = 10;
+testcase = 11;
 
 if (testcase == 1)
     % test case 1: 1-d
@@ -226,6 +226,20 @@ elseif (testcase == 10)
         viscircles([U(i,1),U(i,2)],2*rfinal,'LineStyle','--','LineWidth', 0.5,'Color',color);
     end
 
+elseif (testcase == 11)
+    % test case 11: print real data
+    
+    muN = 200;
+    [U] = greedycluster(W, rfinal, epsilon, muN, T); 
+    figure;
+    plot(W(:,1),W(:,2),'.')
+    hold on;
+    for i = 1:size(U,1)
+        color = unifrnd(0,1,1,3);
+        plot(U(:,1),U(:,2),'+', 'Color', color)
+        viscircles([U(i,1),U(i,2)],2*rfinal,'LineStyle','--','LineWidth', 0.5,'Color',color);
+    end
+    
 end
 
 %viscircles([100,100],10,'LineWidth', 0.5,'Color','blue')
