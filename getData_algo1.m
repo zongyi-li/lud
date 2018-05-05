@@ -1,7 +1,7 @@
 addpath(genpath('YALMIP-master'))
 addpath(genpath('mosek'))
-m = 5; % number of terms
-i_m = 2;
+m = 10; % number of terms
+i_m = 3;
 d = 2; % dim of y
 scale = 100;
 
@@ -10,8 +10,8 @@ T = binornd(200,0.5,[1,m]);
 wstar = ones(1,d);
 for i = 1 : i_m
     Y = (2 * rand(T(i), d) - 1) * scale ; % t*d
-    noise = normrnd(0, 0.2 ,T(i),1) * scale ; % t*1
-    Z = Y * wstar'; % + noise;   % t*1
+    %noise = normrnd(0, 0.2 ,T(i),1) * scale ; % t*1
+    Z = Y * wstar' + noise;   % t*1
     lossMat(:,:,i) = [Z'*Z ,-1*Z'*Y ;-1*Y'*Z, Y'*Y];
     disp(wstar);
 end
@@ -19,8 +19,8 @@ end
 for i = i_m+1 : m
     wstar = randi(10,[1,d]);
     Y = (2*rand(T(i), d) - 1) * scale ; % t*d
-    Z = (2*rand(T(i), 1) - 1) * scale ; % t*1
-    %Z = Y * wstar'; 
+    %Z = (2*rand(T(i), 1) - 1) * scale ; % t*1
+    Z = Y * wstar'; 
     lossMat(:,:,i) = [Z'*Z ,-1*Z'*Y ;-1*Y'*Z, Y'*Y];
     disp(wstar);
 end
@@ -38,6 +38,14 @@ rfinal = 0.1;
 epsilon = 0;
 [U, W] =  listreg(lossMat, T, mu, r0, rfinal, S, epsilon);
 
+figure;
+plot(W(:,1),W(:,2),'+')
+hold on;
+for i = 1:size(U,1)
+    color = unifrnd(0,1,1,3);
+    plot(U(:,1),U(:,2),'.', 'Color', color)
+    viscircles([U(i,1),U(i,2)],2*rfinal,'LineStyle','--','LineWidth', 0.5,'Color',color);
+end
 
 
 
