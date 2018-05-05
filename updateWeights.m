@@ -17,23 +17,31 @@ for i = 1:m
     %define variables for optimization
     ai = sdpvar(1, m, 'full');
     wt = sdpvar(1, d,'full');
-
+    %wt = ai*wh;
+    
     % objective
     Obj = [1,wt]*A(:,:,i)*[1,wt]';
 
     %define our constraint;        
-    Cons = [wt == ai*wh;
+    Cons = [wt == ai*wh; 
             sum(ai) == 1; 
-            0 <= ai <= 2/(mu*N)*T'];
-
-    diagnostics = optimize(Cons, Obj);
+            0 <= ai <= 2/(mu*N)*T];
+        
+    ops = sdpsettings('solver','mosek','verbose',0); % 'verbose'=0  => not print
+    diagnostics = optimize(Cons, Obj, ops);
 
     wt_v = double(wt);
-    z(i) = [1,wt-wh(i,:)]*A(:,:,i)*[1,wt-wh(i,:)]';
+    
+    %disp(i);
+    disp(wt_v);
+    
+    z(i) = abs([1,wt-wh(i,:)]*A(:,:,i)*[1,wt-wh(i,:)]');
 
 end
+disp(z);
 
 z_max = max(z(c~=0));
 c_p = c .* ((z_max - z)/z_max);
+disp(c_p);
 
 end
