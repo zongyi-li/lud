@@ -10,11 +10,17 @@ function [P,k,Cr] = padded(w, rho, tau)
     P = {}; 
     Cr = {}; % comment out this line if don't need cluster center & radius
     k = (rho-2)*rand()+2;
-    iter = 1;
-    list = randperm(m);
-    cluster = 1;
-    remaindingIndex = 1:m;
     
+    remainingIndex = 1:m; % remaining index of W
+    chosenIdx = ~isnan(W(:,1)); % rows that are not NaN
+    remainingIndex = remainingIndex(chosenIdx); % new remaining indices of W that are not NaN's
+    W = W(chosenIdx,:); % W that are not NaN's
+    numRemainingIdx = size(remainingIndex,2);
+    list = remainingIndex(randperm(numRemainingIdx));
+    
+    m = size(W,1);
+    
+    iter = 1; cluster = 1;
     while (m ~= 0)
         j = list(iter);
         radius = k*tau;
@@ -24,8 +30,8 @@ function [P,k,Cr] = padded(w, rho, tau)
         W = W(D > radius,:);
         if (size(T,1) ~= 0) 
             P{cluster}.value = T;
-            P{cluster}.index = remaindingIndex(D <= radius);
-            remaindingIndex = remaindingIndex(D > radius);
+            P{cluster}.index = remainingIndex(D <= radius);
+            remainingIndex = remainingIndex(D > radius);
             wr = [w(j,:),radius]; % comment out this line if don't need cluster center&radius
             Cr{cluster} = wr; % comment out this line if don't need cluster center&radius
             cluster = cluster + 1;
