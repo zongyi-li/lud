@@ -1,9 +1,14 @@
 addpath(genpath('YALMIP-master'))
 addpath(genpath('mosek'))
-m = 30; % number of terms
-i_m = 6;
+m = 10; % number of terms
+i_m = 3;
 d = 2; % dim of y
 scale = 100;
+
+r0 = d;
+rfinal = 0.2;
+epsilon = 0.1;
+
 
 lossMat = zeros(d+1,d+1,m);
 T = binornd(200,0.5,[1,m]);
@@ -43,9 +48,7 @@ mu = sum(T(1:i_m))/sum(T);
 S = 1;
 %[wh_v, Y_v, c] =  quadratic(lossMat, T, u, r, mu, S);
 
-r0 = d;
-rfinal = 0.1;
-epsilon = 0.1;
+
 [U, W] =  listreg(lossMat, T, mu, r0, rfinal, S, epsilon);
 
 figure;

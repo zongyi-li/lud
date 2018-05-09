@@ -1,11 +1,10 @@
-function [U, W] =  listreg(lossMat, T, mu, r0, rfinal, S, epsilon)
+function [U, W, remainingIndex] =  listreg(lossMat, T, mu, N, r0, rfinal, S, epsilon)
 % T: number of examples in each term
 % lossMat: (d+1)*(d+1)*m loss matrix, example info to compute the l2 loss
 % ws: m*d
 
 m = size(lossMat,3);
 d = size(lossMat,1) - 1;
-N = sum(T);
 r = r0;
 [Wh, ~, ~] =  quadratic(lossMat, T, zeros(1,d), r, mu, S); % first run, zero shift
 
@@ -14,12 +13,15 @@ remainingIndex = 1:m; % remaining term index for each round
 while true
     disp('new iteration')
     fprintf("r %d\n",r);
-    disp("W_hat:");
+    disp("Wh:");
     disp(Wh);
     % W <- nonNaN rows of Wh
     nonNaNIdx = ~isnan(Wh(:,1));
     W = Wh(nonNaNIdx,:);
     remainingIndex = remainingIndex(nonNaNIdx);
+    disp('remaining indices:');
+    disp(remainingIndex);
+    
     m = size(remainingIndex,2);
     if r <= 1/2*rfinal  % terminating case
         U = greedycluster(W,rfinal, epsilon, mu*N, T);
