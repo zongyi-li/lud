@@ -1,4 +1,4 @@
-function[UCans] = setcover(datax, datayz, U, W, mu, termIndex, rfinal,remainingIndex,epsilon) 
+function[UCans] = setcover(datax, datayz, U, W, mu, termIndex, rfinal,remainingIndex,epsilon, threshold) 
 % ans: a list of pairs (u,c), where w is the regression fit, c is the k-DNF
 
 UCans = {};
@@ -21,6 +21,7 @@ for i=1:size(U,1)
         newremainingIdx = remainingIndex(selected);
         numSelectedPoints = 0;
         DNF = [];
+        totalLoss = 0;
         while true
             % greedily find the next best term
             maxrate = -Inf;
@@ -33,11 +34,13 @@ for i=1:size(U,1)
                 if termRate > maxrate
                     bestTerm = t;
                     maxrate = termRate;
+                    totalLoss = totalLoss + loss;
                 end
             end
             DNF = [DNF, newremainingIdx(bestTerm)];
             numSelectedPoints = numSelectedPoints + sum(newtermIndex(bestTerm,:));
             if numSelectedPoints > mu*N*(1-epsilon)
+                error = totalLoss / numSelectedPoints;
                 break
             end
 
@@ -47,9 +50,12 @@ for i=1:size(U,1)
             newtermIndex = newtermIndex([1:bestTerm-1,bestTerm+1:end],:);
             newremainingIdx = newremainingIdx([1:bestTerm-1,bestTerm+1:end]);
         end
+        %if error <= threshold
         UCans{iter}.u = u;
         UCans{iter}.c = DNF;
+        UCans{iter}.error = error;
         iter = iter + 1;
+        %end
     end
 end
 
