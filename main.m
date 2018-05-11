@@ -26,6 +26,17 @@ threshold = scale^2 * noise; % threshold for error
 
 
 % plotting
+colors = [ 31, 120, 180; ...
+           51, 160,  44; ...
+          227,  26,  28; ...
+          166, 206, 227; ...
+          252, 146, 114; ...
+          251, 106,  74; ...
+          239,  59,  44; ...
+          203,  24,  29; ...
+          165,  15,  21] / 255;
+
+c = 1;
 if length(UCans) > 0
     
     for i = 1:length(UCans)
@@ -43,30 +54,31 @@ if length(UCans) > 0
     % plot all possible weights and datapoints
     %selectedColor = unifrnd(0,1,1,3);
     for i = 1:size(UCans,2)
-        color = unifrnd(0,1,1,3);
+        %color = unifrnd(0,1,1,3);
         
         z = UCans{i}.u*y;
-        l2 = plot(y,z,'--', 'Color', color);
-        legendarr = [legendarr, l2];
-        ithtext = [int2str(i), 'th predicted line'];
-        legendtexts = [legendtexts, ithtext];
+        l2 = plot(y,z,'--', 'Color', colors(c,:)); 
+        legendarr = [legendarr; l2];
+        ithtext = string(strcat(int2str(i), 'th predicted line'));
+        legendtexts = [legendtexts; ithtext];
     
         % first plot data in termIndex(UCans{1}.c,:)
         selectedData = sum(termIndex(UCans{i}.c,:),1)>0;
         selectedy = datayz(selectedData,1:end-1);
         selectedz = datayz(selectedData,end);
-        l3 = plot(selectedy,selectedz,'.', 'Color', color);
-        legendarr = [legendarr, l3];
-        ithtext = [int2str(i), 'th selected data'];
-        legendtexts = [legendtexts, ithtext];
+        l3 = plot(selectedy,selectedz,'.', 'Color', colors(c,:));c = c+1;
+        legendarr = [legendarr; l3];
+        ithtext = string(strcat(int2str(i), 'th selected data'));
+        legendtexts = [legendtexts; ithtext];
         % plot other points
         nonselected(selectedData) = false;
     end
+    color = unifrnd(0,1,1,3);
     nonselectedy = datayz(nonselected,1:end-1);
     nonselectedz = datayz(nonselected,end); 
-    l4 = plot(nonselectedy,nonselectedz,'.', 'Color', 'r');
-    legendarr = [legendarr, l4];
-    legendtexts = [legendtexts, 'non-selected data'];
+    l4 = plot(nonselectedy,nonselectedz,'.','Color',colors(c,:));
+    legendarr = [legendarr; l4];
+    legendtexts = [legendtexts; 'non-selected data'];
     legend(legendarr, legendtexts);
 else
     disp('U == 0 !!!!!boom!!!!!!!');
