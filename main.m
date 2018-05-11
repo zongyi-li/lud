@@ -73,12 +73,15 @@ if length(UCans) > 0
         % plot other points
         nonselected(selectedData) = false;
     end
-    color = unifrnd(0,1,1,3);
-    nonselectedy = datayz(nonselected,1:end-1);
-    nonselectedz = datayz(nonselected,end); 
-    l4 = plot(nonselectedy,nonselectedz,'.','Color',colors(c,:));
-    legendarr = [legendarr; l4];
-    legendtexts = [legendtexts; 'non-selected data'];
+    if sum(nonselected) > 0 
+        color = unifrnd(0,1,1,3);
+        nonselectedy = datayz(nonselected,1:end-1);
+        nonselectedz = datayz(nonselected,end);
+    
+        l4 = plot(nonselectedy,nonselectedz,'.','Color',colors(c,:));
+        legendarr = [legendarr; l4];
+        legendtexts = [legendtexts; 'non-selected data'];   
+    end
     legend(legendarr, legendtexts);
 else
     disp('U == 0 !!!!!boom!!!!!!!');
