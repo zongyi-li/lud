@@ -26,6 +26,7 @@ for i=1:size(U,1)
             % greedily find the next best term
             maxrate = -Inf;
             bestTerm = NaN;
+            bestLoss = 0;
             for t = 1:size(newtermIndex, 1)
                 Y = datayz(newtermIndex(t,:),1:end-1);
                 Z = datayz(newtermIndex(t,:),end);
@@ -34,9 +35,10 @@ for i=1:size(U,1)
                 if termRate > maxrate
                     bestTerm = t;
                     maxrate = termRate;
-                    totalLoss = totalLoss + loss;
+                    bestLoss = loss;
                 end
             end
+            totalLoss = totalLoss + bestLoss;
             DNF = [DNF, newremainingIdx(bestTerm)];
             numSelectedPoints = numSelectedPoints + sum(newtermIndex(bestTerm,:));
             if numSelectedPoints > mu*N*(1-epsilon)
@@ -51,10 +53,10 @@ for i=1:size(U,1)
             newremainingIdx = newremainingIdx([1:bestTerm-1,bestTerm+1:end]);
         end
         %if error <= threshold
-        UCans{iter}.u = u;
-        UCans{iter}.c = DNF;
-        UCans{iter}.error = error;
-        iter = iter + 1;
+            UCans{iter}.u = u;
+            UCans{iter}.c = DNF;
+            UCans{iter}.error = error;
+            iter = iter + 1;
         %end
     end
 end

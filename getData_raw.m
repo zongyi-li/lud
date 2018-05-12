@@ -1,4 +1,4 @@
-function[datax, datayz, mu] = getData_raw(dimx, dimy, N, scale, noise, DNF, wstar)
+function[datax, datayz, mu, trueError] = getData_raw(dimx, dimy, N, scale, noise, DNF, wstar)
 %DNF is the 2*(2dimx) matrix, each row encode a term.
 %wstar 1*dimy
 
@@ -20,8 +20,12 @@ for t = 1:size(DNF,1)
 end
     
 mu = sum(DNFindex)/N;
+% noise = zeros(sum(DNFindex),1); no noise
 noise = normrnd(0, noise, sum(DNFindex),1) * scale;
 datayz(DNFindex,end) = datayz(DNFindex,1:end-1) * wstar' + noise;
 
+Y = datayz(DNFindex,1:end-1);
+Z = datayz(DNFindex,end);
+trueError = [1,wstar]*[Z'*Z ,-1*Z'*Y ;-1*Y'*Z, Y'*Y]*[1,wstar]' / sum(DNFindex);
 
 end
