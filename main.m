@@ -1,9 +1,9 @@
 addpath(genpath('YALMIP-master'))
 addpath(genpath('mosek'))
 
-dimx = 6;
-d = 6; % dim of y
-N = 100000; % total number of point
+dimx = 3;
+d = 1; % dim of y
+N = 1000; % total number of point
 scale = 100; % scale of y & z
 noise = 0; % variance of noise (before scaled)
 
@@ -12,14 +12,14 @@ DNF = [0,2;
        1,3]; % (not x1 and not x2) or (not x1 and x3);
 % DNF = randi([0,2*dimx-1],4,2);
 % which is [2,8] after coded.
-mu = 0.25;
-r0 = d; 
+mu = 0.5;
+r0 = 10 * d; 
 rfinal = max(0.1 * d, 0.25);
 S = 1;
-padded_maxiter = 112;
+padded_maxiter = 10;
 
 epsilon = 0.1; % a small fraction of mu that we can suffer
-threshold = trueError * dimx^2; % threshold for error, not using this feature
+threshold = 0;%trueError * dimx^2; % threshold for error, not using this feature
 
 wstar = (rand(1,d)*8)+2;
 
@@ -28,7 +28,7 @@ wstar = (rand(1,d)*8)+2;
 % 2. preprocess;
 [lossMat, T, termIndex] = preprocessing(datax, datayz, mu, epsilon);
 % 3. list-regression;
-[U, W, remainingIndex] =  listreg(lossMat, T, mu, N, r0, rfinal, S, epsilon, padded_maxiter);
+[U, W, remainingIndex] =  listreg_no_iter(lossMat, T, mu, N, r0, rfinal, S, epsilon, padded_maxiter);
 % 4. greedy set cover
 [UCans] = setcover(datax, datayz, U, W, mu, termIndex, rfinal, remainingIndex, epsilon, threshold);
 
@@ -43,6 +43,8 @@ if length(UCans) > 0
         disp(UCans{i});
     end
 end
+
+save('output')
 
 %     % plot true line
 % if length(UCans) > 0  
