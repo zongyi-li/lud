@@ -1,4 +1,4 @@
-function [U, W, remainingIndex] =  listreg(lossMat, T, mu, N, r0, rfinal, S, epsilon)
+function [U, W, remainingIndex] =  listreg(lossMat, T, mu, N, r0, rfinal, S, epsilon, padded_maxiter)
 % T: number of examples in each term
 % lossMat: (d+1)*(d+1)*m loss matrix, example info to compute the l2 loss
 % ws: m*d
@@ -28,7 +28,7 @@ while true
         break;
     end
 
-    padded_maxiter = 10;  % 112*log(t*(t+1)/delta);
+    % padded_maxiter = 30;  % 112*log(t*(t+1)/delta);
     Wbar = NaN(m,d,padded_maxiter);
 
     rho = r*log(2/mu);
