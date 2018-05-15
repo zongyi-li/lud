@@ -14,7 +14,7 @@ m = min(dimx*(2*dimx-1), ceil(1/(mu * epsilon))); %(2*dimx choose 2) possible te
 lossMat = zeros(d+1,d+1,m);
 T = zeros(1,m);
 termIndex = false(m,N);
-DNFtable = cell(m,2);
+DNFtable = cell(m,3);
 
 i = 0;
 for t1 = 0:(2*dimx)-1
@@ -27,8 +27,9 @@ for t1 = 0:(2*dimx)-1
         term = (datax(:,x1_index)==x1_value & datax(:,x2_index)==x2_value);
         if sum(term) >= mu* N * epsilon
             i=i+1;
-            DNFtable{i,2} = [x1_value,x1_index,x2_value,x2_index];
             DNFtable{i,1} = DNFstring_format(x1_value, x1_index, x2_value, x2_index);
+            DNFtable{i,2} = [t1,t2];
+            DNFtable{i,3} = [x1_value,x1_index,x2_value,x2_index];
             T(i) = sum(term);
             Y = datayz(term,1:end-1);
             Z = datayz(term,end);
