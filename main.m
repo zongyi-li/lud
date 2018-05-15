@@ -8,7 +8,7 @@ scale = 10; % scale of y & z
 noise = 0.1; % variance of noise (before scaled)
 
 % zongyi's hardcode DNF
-% DNF = [0,2; 1,3]; % (not x1 and not x2) or (not x1 and x3);
+% DNF = [0,2; 1,3]; % (not x1 and not x2) or (x1 and x2);
  DNF = randi([0,2*dimx-1],4,2);
 % which is [2,8] after coded.
 mu = 0.5;
@@ -29,7 +29,7 @@ disp(wstar);
 % 1. generate raw data;
 [datax, datayz, trueError] = getData_raw(dimx, d, N, mu, scale, noise, DNF, wstar);
 % 2. preprocess;
-[lossMat, T, termIndex] = preprocessing(datax, datayz, mu, epsilon);
+[lossMat, T, termIndex, DNFtable] = preprocessing(datax, datayz, mu, epsilon);
 % 3. list-regression;
 N_new = sum(T);
 mu_new = mu * (N/N_new);
