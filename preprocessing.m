@@ -10,7 +10,7 @@ dimx = size(datax,2);
 d = size(datayz,2)-1;
 N = size(datax,1);
 
-m = min(dimx*(2*dimx-1), ceil(1/(mu * epsilon))); %(2*dimx choose 2) possible terms, locate memory for lossMat and T
+m = 2*dimx^2; %(2*dimx choose 2) possible terms, locate memory for lossMat and T
 lossMat = zeros(d+1,d+1,m);
 T = zeros(1,m);
 termIndex = false(m,N);
