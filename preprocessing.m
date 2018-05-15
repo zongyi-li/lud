@@ -1,4 +1,4 @@
-function [lossMat, T, termIndex, DNFtable] = preprocessing(datax, datayz, mu, epsilon)
+function [lossMat, T, termIndex, DNFcell, DNFmat] = preprocessing(datax, datayz, mu, epsilon)
 % assume k = 2; i.e. two terms
 
 
@@ -14,7 +14,8 @@ m = min(dimx*(2*dimx-1), ceil(1/(mu * epsilon))); %(2*dimx choose 2) possible te
 lossMat = zeros(d+1,d+1,m);
 T = zeros(1,m);
 termIndex = false(m,N);
-DNFtable = cell(m,3);
+DNFcell = cell(m,1);
+DNFmat = zeros(m,6);
 
 i = 0;
 for t1 = 0:(2*dimx)-1
@@ -27,9 +28,9 @@ for t1 = 0:(2*dimx)-1
         term = (datax(:,x1_index)==x1_value & datax(:,x2_index)==x2_value);
         if sum(term) >= mu* N * epsilon
             i=i+1;
-            DNFtable{i,1} = DNFstring_format(x1_value, x1_index, x2_value, x2_index);
-            DNFtable{i,2} = [t1,t2];
-            DNFtable{i,3} = [x1_value,x1_index,x2_value,x2_index];
+            DNFcell{i} = DNFstring_format(x1_value, x1_index, x2_value, x2_index);
+            DNFmat(i,1:2) = [t1,t2];
+            DNFmat(i,3:6) = [x1_value,x1_index,x2_value,x2_index];
             T(i) = sum(term);
             Y = datayz(term,1:end-1);
             Z = datayz(term,end);
@@ -39,7 +40,8 @@ for t1 = 0:(2*dimx)-1
         end
     end
 end
-DNFtable = DNFtable(1:i,:);
+DNFcell = DNFcell(1:i,:);
+DNFmat = DNFmat(1:i,:);
 lossMat = lossMat(:,:,1:i);
 T = T(1,1:i);
 termIndex = logical(termIndex(1:i,:));

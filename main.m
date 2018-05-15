@@ -1,8 +1,8 @@
 addpath(genpath('YALMIP-master'));
 addpath(genpath('mosek'));
 
-dimx = 6;
-d = 6; % dim of y
+dimx = 5;
+d = 5; % dim of y
 N = 10000; % total number of point
 scale = 10; % scale of y & z
 noise = 0.1; % variance of noise (before scaled)
@@ -29,7 +29,7 @@ disp(wstar);
 % 1. generate raw data;
 [datax, datayz, trueError] = getData_raw(dimx, d, N, mu, scale, noise, DNF, wstar);
 % 2. preprocess;
-[lossMat, T, termIndex, DNFtable] = preprocessing(datax, datayz, mu, epsilon);
+[lossMat, T, termIndex, DNFtable, DNFmat] = preprocessing(datax, datayz, mu, epsilon);
 % 3. list-regression;
 N_new = sum(T);
 mu_new = mu * (N/N_new);
@@ -44,6 +44,7 @@ disp(wstar);
 if length(UCans) > 0
     for i = 1:length(UCans)
         disp(UCans{i});
+        disp(DNFmat(UCans{i}.c',1:2));
     end
 end
 
