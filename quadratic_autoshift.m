@@ -50,5 +50,5 @@ for t = 1:quad_maxiter
         c = updateWeights(c, wh_v, A, T, mu_new);    
     end
     
-    disp(t); disp(c);disp(wh_v);
+
 end

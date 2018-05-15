@@ -1,16 +1,15 @@
-addpath(genpath('YALMIP-master'))
-addpath(genpath('mosek'))
+addpath(genpath('YALMIP-master'));
+addpath(genpath('mosek'));
 
-dimx = 5;
-d = 5; % dim of y
+dimx = 6;
+d = 6; % dim of y
 N = 10000; % total number of point
 scale = 10; % scale of y & z
 noise = 0.1; % variance of noise (before scaled)
 
 % zongyi's hardcode DNF
-DNF = [0,2;
-      1,3]; % (not x1 and not x2) or (not x1 and x3);
-% DNF = randi([0,2*dimx-1],4,2);
+% DNF = [0,2; 1,3]; % (not x1 and not x2) or (not x1 and x3);
+ DNF = randi([0,2*dimx-1],4,2);
 % which is [2,8] after coded.
 mu = 0.5;
 r0 = 10 * d; 
@@ -21,8 +20,8 @@ quad_maxiter = 10;
 epsilon = 0.1; % a small fraction of mu that we can suffer
 threshold = 0;%trueError * dimx^2; % threshold for error, not using this feature
 
-%wstar = scale * ((rand(1,d)*2)-1);
-wstar = scale * (randi([0,1],1,d)*2-1);
+wstar = scale * ((rand(1,d)*2)-1);
+%wstar = scale * (randi([0,1],1,d)*2-1);
 disp(' ');
 disp('wstar');
 disp(wstar);
@@ -38,7 +37,9 @@ mu_new = mu * (N/N_new);
 % 4. greedy set cover
 [UCans] = setcover(datax, datayz, U, W, mu, termIndex, rfinal, remainingIndex, epsilon, threshold);
 
-
+disp(' ');
+disp('wstar');
+disp(wstar);
 
 if length(UCans) > 0
     for i = 1:length(UCans)
