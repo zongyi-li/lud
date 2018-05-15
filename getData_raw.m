@@ -70,7 +70,8 @@ for t = 1:size(DNF,1)
 end
 
 
-datayz = (2*rand(N, dimy+1) - 1) * scale;
+datayz = (2*rand(N, dimy+1) - 1);
+datayz(:,end) = datayz(:,end) * scale;
 if noise == 0
     noise = zeros(sum(DNFindex),1); % no noise
 else

@@ -25,7 +25,7 @@ for i = 1:m
     %define our constraint;        
     Cons = [wt == ai*wh; 
             sum(ai) == 1; 
-            0 <= ai <= 2/(mu*N)*T];
+            0 <= ai <= 2/(mu*N) * T];
         
     ops = sdpsettings('solver','mosek','verbose',0); % 'verbose'=0  => not print
     diagnostics = optimize(Cons, Obj, ops);
@@ -35,7 +35,7 @@ for i = 1:m
     %disp(i);
     %disp(wt_v);
     
-    z(i) = abs([1,wt-wh(i,:)]*A(:,:,i)*[1,wt-wh(i,:)]');
+    z(i) = max([1,wt]*A(:,:,i)*[1,wt]'-[1,wh(i,:)]*A(:,:,i)*[1,wh(i,:)]',0);
 
 end
 %disp(z);

@@ -276,3 +276,12 @@ end
 
 %viscircles([100,100],10,'LineWidth', 0.5,'Color','blue')
 
+    figure;
+    plot(W(:,1),0,'.')
+    hold on;
+    for i = 1:size(U,1)
+        color = unifrnd(0,1,1,3);
+        plot(U(:,1),0,'+', 'Color', color)
+        viscircles([U(i,1),0],2*rfinal,'LineStyle','--','LineWidth', 0.5,'Color',color);
+    end
+

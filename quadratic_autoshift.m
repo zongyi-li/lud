@@ -1,4 +1,4 @@
-function [wh_v, Y_v, c] =  quadratic(A, T, u, r, mu, S)
+function [wh_v, Y_v, c] =  quadratic_autoshift(A, T, r, mu_new, S, quad_maxiter)
 %Input:
 % A: (d+1)*(d+1)*m, loss matrix.
 % T: m*1, number of points in each terms.
@@ -10,26 +10,23 @@ function [wh_v, Y_v, c] =  quadratic(A, T, u, r, mu, S)
 % Y: d*d, the "ellipse" bounds w.
 % c: 1*m, weights for each term.
 
-
-
-
 m = size(A,3); 
 d = size(A,1) - 1;
 N = sum(T);
 
 %for now we define lambda as a constant
-lambda = sqrt(8*mu)*N*m*S/r; 
+lambda = sqrt(8*mu_new)*N*S/r; 
 % disp(lambda);
 
 %initialize weights c <- [1,...,1] \in \R^n
 c = ones(1,m); 
 
-maxiter = 10;
-while true 
+for t = 1:quad_maxiter
     %define YALMIP symbolic decision variables
     Y = sdpvar(d, d, 'symmetric');
     wh = sdpvar(m, d, 'full');
-    w_shift = wh - repmat(u, m,1);
+    u = sdpvar(1, d, 'full');
+    %w_shift = wh - repmat(u, m,1);
     
     %define our constraint;
     Cons = [Y>=0]; % semidefinite
@@ -37,7 +34,7 @@ while true
     Obj =  lambda * trace(Y); 
     for i=1:m
         %w_i w_i' bounded by Y, for all i = 1,...,n
-        Cons = [Cons, [Y, w_shift(i,:)'; w_shift(i,:), 1] >= 0];
+        Cons = [Cons, [Y, (wh(i,:)-u)'; (wh(i,:)-u), 1] >= 0];
         Obj = Obj + c(i) * [1,wh(i,:)]*A(:,:,i)*[1,wh(i,:)]';
     end
     %optimize constraints, objective
@@ -47,9 +44,11 @@ while true
     Y_v = double(Y);
 
     % disp(t); disp(wh_v); disp(trace(Y_v)); disp((6*r^2)/mu);
-    if trace(Y_v) <= ((6*r^2)/mu)
+    if trace(Y_v) <= ((6*r^2)/mu_new)
         break;
     else
-        c = updateWeights(c, wh_v, A, T, mu);    
-    end 
+        c = updateWeights(c, wh_v, A, T, mu_new);    
+    end
+    
+    disp(t); disp(c);disp(wh_v);
 end
