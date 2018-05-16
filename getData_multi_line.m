@@ -1,8 +1,12 @@
-function[datax, datayz, trueError] = getData_raw(dimx, dimy, N, mu, scale, noise, DNF, wstar)
+function[datax, datayz, trueError] = getData_multi_line(dimx, dimy, N, mu, scale, noise, DNF, wstar)
 % DNF is the 2*(2dimx) matrix, each row encode a term.
 % wstar 1*dimy
 % mu is the feature of good points.
 
+
+
+
+%generate X
 % generate good points
 numGoodpoint = ceil(mu*N);
 datax_good = zeros(numGoodpoint,dimx);
@@ -57,6 +61,10 @@ datax_bad = datax_bad(1:numBadpoint,:);
 datax = [datax_good; datax_bad];
 
 
+datayz = (2*rand(N, dimy+1) - 1);
+datayz(:,end) = datayz(:,end) * scale;
+
+
 DNFindex = false(N,1);
 for t = 1:size(DNF,1)   
     x1 = DNF(t,1);
@@ -67,24 +75,19 @@ for t = 1:size(DNF,1)
     x2_index = (x2-x2_value)/2 + 1;
 
     term = (datax(:,x1_index)==x1_value & datax(:,x2_index)==x2_value);
+    
+    if noise == 0
+        z_noise = zeros(sum(term),1); % no noise
+    else
+        z_noise = normrnd(0, noise, [sum(term),1]) * scale;
+    end
+    
+    w_perturb = normrnd(0, noise, [1, dimy]);
+    wstar_perturb = wstar + w_perturb;
+    datayz(term,end) = datayz(term,1:end-1) * wstar_perturb' + z_noise;
+    
     DNFindex = DNFindex | term ;
 end
-
-
-%generate Y
-
-datayz = (2*rand(N, dimy+1) - 1);
-datayz(:,end) = datayz(:,end) * scale;
-if noise == 0
-    noise = zeros(sum(DNFindex),1); % no noise
-else
-    noise = normrnd(0, noise, sum(DNFindex),1) * scale;
-end
-datayz(DNFindex,end) = datayz(DNFindex,1:end-1) * wstar' + noise;
-
-
-
-
 
 Y = datayz(DNFindex,1:end-1);
 Z = datayz(DNFindex,end);

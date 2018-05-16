@@ -5,7 +5,7 @@ dimx = 5;
 d = 5; % dim of y
 N = 10000; % total number of point
 scale = 10; % scale of y & z
-noise = 0.1; % variance of noise (before scaled)
+noise = 0.01; % variance of noise (before scaled)
 
 % zongyi's hardcode DNF
 % DNF = [0,2; 1,3]; % (not x1 and not x2) or (x1 and x2);
@@ -27,7 +27,7 @@ disp('wstar');
 disp(wstar);
 
 % 1. generate raw data;
-[datax, datayz, trueError] = getData_raw(dimx, d, N, mu, scale, noise, DNF, wstar);
+[datax, datayz, trueError] = getData_multi_line(dimx, d, N, mu, scale, noise, DNF, wstar);
 % 2. preprocess;
 [lossMat, T, termIndex, DNFtable, DNFmat] = preprocessing(datax, datayz, mu, epsilon);
 % 3. list-regression;
@@ -41,12 +41,12 @@ disp(' ');
 disp('wstar');
 disp(wstar);
 
-if length(UCans) > 0
-    for i = 1:length(UCans)
-        disp(UCans{i});
-        disp(DNFmat(UCans{i}.c',1:2));
-    end
-end
+
+DNFstring = printPlantedDNF(DNF);
+printUCans(UCans, DNFtable);
+disp('planted DNF:');
+disp(DNFstring);
+
 
 save('output')
 
