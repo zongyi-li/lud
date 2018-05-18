@@ -28,47 +28,102 @@ mu_new = mu * (N/N_new);
 [UCans] = setcover(datax, datayz, U, W, mu, termIndex, rfinal, remainingIndex, epsilon, threshold);
 
 
-if length(UCans) > 0
-    for i = 1:length(UCans)
-        disp(UCans{i});
-    end
-end
+disp('trueError');
+disp(trueError);
 
-save('output')
+DNFstring = printPlantedDNF(DNF);
+printUCans(UCans, DNFtable);
+disp('planted DNF:');
+disp(DNFstring);
 
-%     % plot true line
+
+    % plot true line
 if length(UCans) > 0  
 
     colors = [ 31, 120, 180; ...
                51, 160,  44; ...
-               227,  26,  28; ...
-               166, 206, 227; ...
-               252, 146, 114; ...
-               251, 106,  74; ...
-               239,  59,  44; ...
-               203,  24,  29; ...
-               165,  15,  21] / 255;
+              227,  26,  28; ...
+              166, 206, 227; ...
+              252, 146, 114; ...
+              251, 106,  74; ...
+              239,  59,  44; ...
+              203,  24,  29; ...
+              165,  15,  21] / 255;
 
     c = 1;
 
     y = -pi:pi;
     yhat = [ones(1,length(y)); y];
-    
+    legendarr = [];
+    legendtexts = [];
 
+    nonselected = true(1,size(datax,1));
     % plot all possible weights and datapoints
     %selectedColor = unifrnd(0,1,1,3);
-    plot(datayz(:,2),datayz(:,3),'.', 'Color', colors(c,:));
-    c=c+1;
-    hold on; 
-    
-    for i = 1:size(UCans,2)
+    for i = size(UCans,2):-1:1
+        c = i;
         %color = unifrnd(0,1,1,3);
-        
         z = UCans{i}.u*yhat;
-        l2 = plot(y,z,'-', 'Color', colors(c,:)); 
-        c = c+1;
-
+        l2 = plot(y,z,'--', 'Color', colors(c,:)); 
+        if i == 3
+           hold on;
+        end
+        legendarr = [legendarr; l2];
+        ithtext = string(strcat(int2str(i), 'th predicted line'));
+        legendtexts = [legendtexts; ithtext];
+    
+        % first plot data in termIndex(UCans{1}.c,:)
+        selectedData = sum(termIndex(UCans{i}.c,:),1)>0;
+        selectedy = datayz(selectedData,2);
+        selectedz = datayz(selectedData,end);
+        l3 = plot(selectedy,selectedz,'.', 'Color', colors(c,:));
+        legendarr = [legendarr; l3];
+        ithtext = string(strcat(int2str(i), 'th selected data'));
+        legendtexts = [legendtexts; ithtext];
+        % plot other points
+        nonselected(selectedData) = false;
+        if i == 1
+            p = patch('vertices', [-pi/2, -3; -pi/2, 3; pi/2, 3; pi/2, -3], ...
+                       'faces', [1, 2, 3, 4], ...
+                       'FaceColor', colors(c,:), ...
+                       'FaceAlpha', 0.2, ...
+                       'EdgeColor', [169,169,169] / 255);
+        elseif i == 2
+            p = patch('vertices', [0, -3; 0, 3; 3.5, 3; 3.5, -3], ...
+               'faces', [1, 2, 3, 4], ...
+               'FaceColor', colors(c,:), ...
+               'FaceAlpha', 0.1, ...
+               'EdgeColor', [169,169,169] / 255);
+        else
+            p = patch('vertices', [-3.5, -3; -3.5, 3; 0, 3; 0, -3], ...
+                'faces', [1, 2, 3, 4], ...
+                'FaceColor', colors(c,:), ...
+                'FaceAlpha', 0.1, ...
+                'EdgeColor', [169,169,169] / 255);
+        end
+        legendarr = [legendarr; p];
+        ithtext = string(strcat(int2str(i), 'th selected term'));
+        legendtexts = [legendtexts; ithtext];
+    end   
+  
+    if sum(nonselected) > 0 
+        color = unifrnd(0,1,1,3);
+        nonselectedy = datayz(nonselected,2);
+        nonselectedz = datayz(nonselected,end);
+    
+        l4 = plot(nonselectedy,nonselectedz,'.','Color',colors(c,:));
+        legendarr = [legendarr; l4];
+        legendtexts = [legendtexts; 'non-selected data'];   
     end
- else
-     disp('U == 0 !!!!!boom!!!!!!!');
- end
+    lgd = legend(legendarr, legendtexts);
+    lgd.FontSize = 14;
+    xl = xlabel('regression variable Y');
+    set(xl, 'FontSize', 14);
+    yl = ylabel('regression label Z');
+    set(yl, 'FontSize', 14);
+    tl = title('Z = sin(Y) + noise');
+    set(tl, 'FontSize', 14);    
+    xlim([-3.5,3.5]);
+else
+    disp('U == 0 !!!!!boom!!!!!!!');
+end

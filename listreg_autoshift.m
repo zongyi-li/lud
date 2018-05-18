@@ -41,7 +41,6 @@ while true %any(remainingIndex==2) && any(remainingIndex==8)
             clusterIdx = remainingIndex(Ph{i}.index);
             size_T = sum(T(clusterIdx)); % number of pt in this cluster
             if size_T > (1-epsilon)* mu_new * N              % Run algo1 
-                shift = Cr{i}(1:end-1);
                 clusterlossMat = lossMat(:,:,clusterIdx); 
                 [ws_cluster, ~, ~] =  quadratic_autoshift(clusterlossMat, T(clusterIdx), rho+r, mu_new, S, quad_maxiter);
                 Wbar(clusterIdx,:,h) = ws_cluster;
